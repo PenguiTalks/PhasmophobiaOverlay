@@ -54,9 +54,9 @@
         }
 
         ComfyJS.onCommand = (user, command, message, flags, extra) => {
-            if ((flags.mod || flags.broadcaster || flags.vip) && clues.includes(command)) {
+            //if ((flags.mod || flags.broadcaster || flags.vip) && clues.includes(command)) {
             //uncomment the below line and comment the above line if you would like any user in chat to be able to input hints and clear
-            //if (clues.includes(command)) {
+            if (clues.includes(command)) {
                 console.log(command + " was typed in chat");
                 clicked(command);
             }
