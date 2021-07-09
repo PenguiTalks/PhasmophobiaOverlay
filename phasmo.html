@@ -1,0 +1,114 @@
+<!doctype html>
+
+
+<head>
+    <title>Phasmo OBS Overlay</title>
+    <script src="https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js"></script>
+    <link rel="stylesheet" href="phasmo.css" <meta charset=utf-8> </head>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=East+Sea+Dokdo&display=swap" rel="stylesheet">
+
+<body>
+    <p id="iframegoeshere"></p>
+    <script type="text/javascript">
+        // Script written by Rune911. If you'd like to support me please drop a follow at https://twitch.tv/nigiri21sushi .
+        // Add this script as a web source in obs. From there it will look for chat commands from the broadcaster, mods, or vip
+        // Valid commands are !orbs, !freezing, !fingerprints, !box, !writing, and !emf.
+        // When a new clue is found just enter that clue. To clear the overlay or undo things if a mistake was made use !phasmo-reset
+        // Idea for this script and consultation from https://twitch.tv/solrac214
+        // to use simply change the values in the config section below
+
+        // config
+        alwaysshow = true
+        username = "placeholder";
+        // end config
+
+        clues = ["orbs", "freezing", "fingerprints", "box", "writing", "emf"];
+        anticlues = ["noorbs", "nofreezing", "nofingerprints", "nobox", "nowriting", "noemf"]
+
+        ghosts = {
+            Banshee: ["freezing", "fingerprints", "emf"],
+            Demon: ["freezing", "box", "writing"],
+            Jinn: ["orbs", "box", "emf"],
+            Mare: ["freezing", "orbs", "box"],
+            Oni: ["box", "writing", "emf"],
+            Phantom: ["freezing", "orbs", "emf"],
+            Poltergeist: ["orbs", "fingerprints", "box"],
+            Revenant: ["fingerprints", "writing", "emf"],
+            Shade: ["orbs", "emf", "writing"],
+            Spirit: ["box", "fingerprints", "writing"],
+            Wraith: ["freezing", "fingerprints", "box"],
+            Yurei: ["freezing", "orbs", "writing"]
+        }
+
+        foundclues = [];
+        possibleclues = [];
+        foundclueshtml = "";
+
+        if (username == "placeholder") {
+            document.getElementById("iframegoeshere").innerHTML = "Widget not configured. Please change username in html file."
+        } else if (alwaysshow) {
+            possibleghosts();
+        }
+
+        ComfyJS.onCommand = (user, command, message, flags, extra) => {
+            if ((flags.mod || flags.broadcaster || flags.vip) && clues.includes(command)) {
+            //uncomment the below line and comment the above line if you would like any user in chat to be able to input hints and clear
+            //if (clues.includes(command)) {
+                console.log(command + " was typed in chat");
+                clicked(command);
+            }
+            else if ((flags.mod || flags.broadcaster || flags.vip) && command === "phasmo-reset") {
+            //uncomment the below line and comment the above line if you would like any user in chat to be able to input hints and clear
+            //else if (command === "phasmo-reset") {
+                console.log(command + " was typed in chat");
+                foundclues = [];
+                foundclueshtml = "";
+                document.getElementById("iframegoeshere").innerHTML = "";
+                if (alwaysshow) {
+                    possibleghosts();
+                }
+
+            }
+        }
+
+        function clicked(clue) {
+            if (!(foundclues.includes(clue))) {
+                foundclueshtml += "<button type=\"button\" class=\"found\">" + clue + "<\/button>";
+                foundclues.push(clue);
+                possibleghosts();
+            }
+        }
+
+        function possibleghosts() {
+            possibleclues = [];
+            remainingghosts = [];
+            for (ghost in ghosts) {
+                remainingghosts.push(ghost);
+                for (clue in foundclues) {
+                    if (!(ghosts[ghost].includes(foundclues[clue]))) {
+                        remainingghosts.pop();
+                        break;
+                    };
+
+                };
+
+            };
+            remainingghostshtml = "";
+            possibleclueshtml = "";
+            for (ghost in remainingghosts) {
+                remainingghostshtml += "<button type=\"button\">" + remainingghosts[ghost] + "<\/button>";
+                for (clue in ghosts[remainingghosts[ghost]]) {
+                    newclue = ghosts[remainingghosts[ghost]][clue]
+                    if (!(possibleclues.includes(newclue)) && !(foundclues.includes(newclue))) {
+                        possibleclues.push(newclue);
+                        possibleclueshtml += "<button type=\"button\">" + newclue + "<\/button>";
+                    };
+                };
+            };
+            document.getElementById("iframegoeshere").innerHTML = "<p style=\"color:white\"><span class=\"rowheader\">Possibilities: </span>" + remainingghostshtml + "<br><span class=\"rowheader\">Found:</span>" + foundclueshtml + "<br><span class=\"rowheader\"> Looking For: </span>" + possibleclueshtml + "<\/p>";
+        };
+
+        ComfyJS.Init(username);
+    </script>
+</body>
