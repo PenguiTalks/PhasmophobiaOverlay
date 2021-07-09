@@ -14,7 +14,7 @@
         // Script written by Rune911. If you'd like to support me please drop a follow at https://twitch.tv/nigiri21sushi .
         // Add this script as a web source in obs. From there it will look for chat commands from the broadcaster, mods, or vip
         // Valid commands are !orbs, !freezing, !fingerprints, !box, !writing, and !emf.
-        // When a new clue is found just enter that clue. To clear the overlay or undo things if a mistake was made use !phasmo-reset
+        // When a new clue is found just enter that clue. To clear the overlay or undo things if a mistake was made use !phasreset
         // Idea for this script and consultation from https://twitch.tv/solrac214
         // to use simply change the values in the config section below
 
@@ -60,9 +60,9 @@
                 console.log(command + " was typed in chat");
                 clicked(command);
             }
-            else if ((flags.mod || flags.broadcaster || flags.vip) && command === "phasmo-reset") {
+            else if ((flags.mod || flags.broadcaster || flags.vip) && command === "!phasreset") {
             //uncomment the below line and comment the above line if you would like any user in chat to be able to input hints and clear
-            //else if (command === "phasmo-reset") {
+            //else if (command === "!phasreset") {
                 console.log(command + " was typed in chat");
                 foundclues = [];
                 foundclueshtml = "";
